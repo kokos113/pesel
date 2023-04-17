@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8">
+    <title>Navigator</title>
+    <meta name="Author" content="Tymon Woźniak">
+  </head>
+  <body>
+    <h1>Objekt Navigator</h4>
+    <p>
+      Szerokość geograficzna: <span id="latitude"></span><br>
+      Długość geograficzna: <span id="longitude"></span><br>
+      Promień zakresu błędu: <span id="accuracy"></span>km
+    </p>
+    <p>
+      <a id="maps" target="_blank">Pokaż na mapach</a><br>
+      <iframe id="frameMaps" src="" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </p>
+    <p>Reszta szczegółow w konsoli!</p>
+    <script>
+        const DOMAIN_GOOGLE_MAPS = "https://www.google.pl/maps";
+
+/**
+ * Za pomocą parametrów zwraca link do map Google
+ * @param {number} latitude Szerokość geograficzna
+ * @param {number} longitude Długość geograficzna
+ * @param {number} zoom Przybliżenie na mapach
+ * @param {string} output Tryb wyjścia [""/"embed"]
+ * @returns {string} Link
+ */
+function constructGoogleMapsLink(latitude, longitude, zoom, output = ""){
+  return `${DOMAIN_GOOGLE_MAPS}?q=${latitude},${longitude}&z=${zoom}&output=${output}`;
+}
+
+console.warn(`Przęglądarka: ${navigator.appCodeName} | ${navigator.appVersion} - Przestarzałe!`); // Przestarzałe!
+console.log(`Język: ${navigator.language}`);
+console.log(`Ciasteczka: ${navigator.cookieEnabled ? "tak" : "nie"}`);
+console.warn(`Platforma: ${navigator.platform}`);
+
+navigator.geolocation.getCurrentPosition((pos) => {
+  let latitude = pos.coords.latitude;
+  let longitude = pos.coords.longitude;
+  document.getElementById("latitude").innerText = latitude;
+  document.getElementById("longitude").innerText = longitude;
+  // pos.coords.accuracy -> zwraca zakres błędu w metrach
+  // 5125.32m -> 5km
+  // f. Math.floor to zaokrąglenie
+  document.getElementById("accuracy").innerText = Math.floor(pos.coords.accuracy/1000);
+  document.getElementById("maps").href = constructGoogleMapsLink(latitude, longitude, 15);
+  document.getElementById("frameMaps").src = constructGoogleMapsLink(latitude, longitude, 15, "embed");
+});
+    </script>
+  </body>
+</html>
